@@ -1,0 +1,249 @@
+#include <iostream>
+using namespace std;
+
+struct Student {
+    string name;
+    string rollNo;
+    string department;
+    string course;
+    Student* next;
+};
+
+const int MAX_STUDENTS = 20;
+Student* head = nullptr;
+int total = 0;
+
+string names[MAX_STUDENTS];
+string rollNos[MAX_STUDENTS];
+string departments[MAX_STUDENTS];
+string courses[MAX_STUDENTS];
+
+void copyLinkedListToArray() {
+    Student* current = head;
+    int i = 0;
+
+    while (current != nullptr && i < MAX_STUDENTS) {
+        names[i] = current->name;
+        rollNos[i] = current->rollNo;
+        departments[i] = current->department;
+        courses[i] = current->course;
+
+        current = current->next;
+        i++;
+    }
+}
+
+void copyArrayToLinkedList() {
+    for (int i = 0; i < total; i++) {
+        Student* newStudent = new Student;
+
+        newStudent->name = names[i];
+        newStudent->rollNo = rollNos[i];
+        newStudent->department = departments[i];
+        newStudent->course = courses[i];
+
+        newStudent->next = head;
+        head = newStudent;
+    }
+}
+
+void enter() {
+    int choice = 0;
+
+    cout << "How many students do you want to enter?" << endl;
+    cin >> choice;
+
+    if (total + choice <= MAX_STUDENTS) {
+        for (int i = 0; i < choice; i++) {
+            Student* newStudent = new Student;
+
+            cout << "\nEnter the Data of student " << total + i + 1 << endl << endl;
+            cout << "Enter Name of the student : " << endl;
+            cin >> newStudent->name;
+
+            cout << "Enter Roll no of the student : " << endl;
+            cin >> newStudent->rollNo;
+
+            cout << "Enter department of the student : " << endl;
+            cin >> newStudent->department;
+
+            cout << "Enter course of the student : " << endl;
+            cin >> newStudent->course;
+
+            newStudent->next = head;
+            head = newStudent;
+        }
+
+        total += choice;
+        copyLinkedListToArray(); // Copy linked list to array for display and search
+    }
+    else {
+        cout << "Exceeded maximum number of students!" << endl;
+    }
+}
+
+void show() {
+    if (total == 0) {
+        cout << "No data is entered" << endl;
+    }
+    else {
+        cout << "The data of the students is as :" << endl;
+
+        for (int i = 0; i < total; i++) {
+            cout << "\nData of Student " << i + 1 << endl << endl;
+            cout << "Name: " << names[i] << endl;
+            cout << "Roll no: " << rollNos[i] << endl;
+            cout << "Department: " << departments[i] << endl;
+            cout << "Course: " << courses[i] << endl;
+        }
+    }
+}
+
+void search() {
+    if (total == 0) {
+        cout << "No data is entered" << endl;
+    }
+    else {
+        string rollNo;
+        cout << "Enter the roll no of student which you want to search: " << endl;
+        cin >> rollNo;
+
+        cout << "The data of the searched student is :" << endl;
+
+        for (int i = 0; i < total; i++) {
+            if (rollNo == rollNos[i]) {
+                cout << "\nName: " << names[i] << endl;
+                cout << "Roll no: " << rollNos[i] << endl;
+                cout << "Department: " << departments[i] << endl;
+                cout << "Course: " << courses[i] << endl;
+                return;
+            }
+        }
+
+        cout << "Student not found" << endl;
+    }
+}
+
+void update() {
+    if (total == 0) {
+        cout << "No data is entered" << endl;
+    }
+    else {
+        string rollNo;
+        cout << "Enter the roll no of student you want to update: " << endl;
+        cin >> rollNo;
+
+        for (int i = 0; i < total; i++) {
+            if (rollNo == rollNos[i]) {
+                cout << "\nPrevious data:" << endl << endl;
+                cout << "Data of Student " << i + 1 << endl;
+                cout << "Name: " << names[i] << endl;
+                cout << "Roll no: " << rollNos[i] << endl;
+                cout << "Department: " << departments[i] << endl;
+                cout << "Course: " << courses[i] << endl;
+
+                cout << "\nEnter new data:" << endl << endl;
+                cout << "Enter name: " << endl;
+                cin >> names[i];
+                cout << "Enter Roll no: " << endl;
+                cin >> rollNos[i];
+                cout << "Enter Department: " << endl;
+                cin >> departments[i];
+                cout << "Enter course: " << endl;
+                cin >> courses[i];
+
+                // Update linked list with the modified array data
+                copyArrayToLinkedList();
+
+                return;
+            }
+        }
+
+        cout << "Student not found" << endl;
+    }
+}
+
+void deleteRecord() {
+    if (total == 0) {
+        cout << "No data is entered" << endl;
+    }
+    else {
+        int option;
+        cout << "Press 1 to delete all records" << endl;
+        cout << "Press 2 to delete a specific record" << endl;
+        cin >> option;
+
+        if (option == 1) {
+            total = 0;
+            cout << "All records are deleted" << endl;
+            head = nullptr; // Clear the linked list
+        }
+        else if (option == 2) {
+            string rollNo;
+            cout << "Enter the roll no of the student you want to delete: " << endl;
+            cin >> rollNo;
+
+            for (int i = 0; i < total; i++) {
+                if (rollNo == rollNos[i]) {
+                    for (int j = i; j < total - 1; j++) {
+                        names[j] = names[j + 1];
+                        rollNos[j] = rollNos[j + 1];
+                        departments[j] = departments[j + 1];
+                        courses[j] = courses[j + 1];
+                    }
+
+                    total--;
+
+                    // Update linked list with the modified array data
+                    copyArrayToLinkedList();
+
+                    cout << "The required record is deleted" << endl;
+                    return;
+                }
+            }
+
+            cout << "Student not found" << endl;
+        }
+        else {
+            cout << "Invalid input" << endl;
+        }
+    }
+}
+
+int main() {
+    int choice;
+
+    while (true) {
+        cout << "\nPress 1 to enter data" << endl;
+        cout << "Press 2 to show data" << endl;
+        cout << "Press 3 to search data" << endl;
+        cout << "Press 4 to update data" << endl;
+        cout << "Press 5 to delete data" << endl;
+        cout << "Press 6 to exit" << endl;
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            enter();
+            break;
+        case 2:
+            show();
+            break;
+        case 3:
+            search();
+            break;
+        case 4:
+            update();
+            break;
+        case 5:
+            deleteRecord();
+            break;
+        case 6:
+            exit(0);
+        default:
+            cout << "Invalid input!" << endl;
+        }
+    }
+
+    return 0;
+}
